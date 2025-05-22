@@ -12,7 +12,7 @@ export class Software{
     @Column('text')
     description!: string;
 
-    @Column('simple-array')
+    @Column('simple-array',{array:true})
     accesslevels!: string[];
 
 }

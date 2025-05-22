@@ -16,7 +16,7 @@ export function Role(...Roles: string[]) {
       const decoded = jwt.verify(token, secret) as { role: string };
 
       if (!Roles.includes(decoded.role)) {
-        res.status(403).json({ message: 'error' });
+        res.status(403).json({ message: 'unauthorized' });
         return ;
       }
 

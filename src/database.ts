@@ -18,7 +18,8 @@ export const data_source = new DataSource({
   synchronize: true,
   logging: false,
   entities: [User, Software, Request],
-  migrations: [__dirname + '/migrations/*{.ts,.js}'],
+  migrations: [__dirname + '/resources/*{.ts,.js}'],
   subscribers: [],
+  migrationsTableName: "excutedmigrations"
   
 });

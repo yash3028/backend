@@ -16,3 +16,13 @@ export const createSoftware = async(req:Request,res:Response)=>{
         res.status(500).json({message:'error'})
     }
 }
+
+export const getAllSoftware = async(req:Request,res:Response)=>{
+    try{
+        const softwareRepo = data_source.getRepository(Software)
+        const softwares = await softwareRepo.find()
+        res.status(201).json(softwares)
+    }catch(error){
+        res.status(404).json({message:"no software found"})
+    }
+}

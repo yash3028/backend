@@ -63,7 +63,7 @@ export const login: RequestHandler = async (req: Request, res: Response): Promis
       { expiresIn: '1d' }
     );
 
-    res.status(200).json({ success: true, token });
+    res.status(200).json({ success: true, token,role:user.role });
   } catch (error) {
     res.status(500).json({ message: 'Internal server error' });
   }

@@ -3,7 +3,6 @@ import cors from "cors"
 import auth from "./routes/auth"
 import software from "./routes/software"
 import request from "./routes/request"
-import { Role } from "./middlewares/role"
 import { authenticate } from "./middlewares/authenticate"
 const app = express()
 app.use(cors())
