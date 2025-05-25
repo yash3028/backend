@@ -13,6 +13,7 @@ export const createSoftware = async(req:Request,res:Response)=>{
         await softwareRepo.save(software)
         res.status(201).json({message:"software created"})
     }catch(error){
+        console.log("error:",error)
         res.status(500).json({message:'error'})
     }
 }

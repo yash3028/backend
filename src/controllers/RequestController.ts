@@ -4,47 +4,66 @@ import { Software } from "../entities/Software"
 import { User } from "../entities/User"
 import { Request as ExpressRequest,RequestHandler,Response } from "express"
 import { AuthRequest } from "../middlewares/authenticate"
-import { json } from "stream/consumers"
 
-export const submitRequest: RequestHandler = async(req:AuthRequest,res:Response)=>{
-    try{
-        const userRepo = data_source.getRepository(User)
-        const softwareRepo = data_source.getRepository(Software)
-        const requestRepo = data_source.getRepository(Request)
-        const {softwareName,accessType,reason} = req.body
-        if(!req.user){
-            res.status(404).json({message:"user not found"})
-            return
-        }        
-       
-        const software = await softwareRepo.findOneBy({name:softwareName})
-        if(!software){
-            res.status(404).json({message:"not found software"})
-            return;
-            }
-        const request = new Request()
-        request.user = req.user
-        request.software = software;
-        request.accessType = accessType;
-        request.reason = reason;
-        request.status = 'Pending';
-        await requestRepo.save(request);
-        res.status(201).json({message:'request submitted'})
-        return
-    }catch(error){
-        res.status(500).json({message:'server errorr'})
-        return
-        }
+export const submitRequest: RequestHandler = async(req: AuthRequest, res: Response) => {
+  try {
+    const userRepo = data_source.getRepository(User);
+    const softwareRepo = data_source.getRepository(Software);
+    const requestRepo = data_source.getRepository(Request);
+
+    const { software, accessType, reason } = req.body;
+    console.log("Software from body:", software);
+
+    if (!req.user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const userEntity = await userRepo.findOneBy({ id: req.user.id });
+    if (!userEntity) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const softwareEntity = await softwareRepo.findOneBy({ name: software });
+    if (!softwareEntity) {
+      res.status(404).json({ message: "Software not found" });
+      return;
+    }
+
+    const request = new Request();
+    request.user = userEntity;
+    request.software = softwareEntity;
+    request.accessType = accessType;
+    request.reason = reason;
+    request.status = 'Pending';
+
+    await requestRepo.save(request);
+
+    res.status(201).json({ message: 'Request submitted' });
+  } catch (error) {
+    console.log("Error:", error);
+    res.status(500).json({ message: 'Server error' });
+  }
 };
 
 export const getPendingRequest = async(req:ExpressRequest,res:Response)=>{
     try{
+        const page = Number(req.query.page) || 1
+        const limit = 10
+        
         const requestRepo = data_source.getRepository(Request);
-        const requests = await requestRepo.find({
-            where:{status:"Pending"}       
+        const [requests,total] = await requestRepo.findAndCount({
+            where:{status:"Pending"},
+            relations: ["software", "user"],
+            skip: (page - 1) * limit,
+            take:limit   
          });
-        console.log(requests)
-        res.json(requests);
+        res.json({data:requests,
+            total,
+            page,
+            totalpages: Math.ceil(total/limit)
+        });
     }catch(error){
         res.json({message:"error"})
     }

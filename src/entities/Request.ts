@@ -10,7 +10,7 @@ export class Request{
     id!: number
     @ManyToOne(()=>User)
     user!: User
-    @ManyToMany(()=>Software)
+    @ManyToOne(()=>Software)
     software!:Software
     @Column()
     accessType!:  accesstype
